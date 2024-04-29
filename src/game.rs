@@ -1,41 +1,78 @@
-use crate::player::{Player};
+use std::collections::HashMap;
+
+use crate::player::Player;
 use crate::card::Card;
-use crate::Suit;
+use crate::{Role, Suit};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
 pub struct Game {
-    pub players: Vec<Player>,
+    pub players: HashMap<Role, Player>,
     pub deck: Vec<Card>,
     pub current_turn: usize,
     pub last_played: Option<Card>,
     pub first_round: bool,
+    roles : Vec<Role>,
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
-            players: Vec::new(),
+            players: HashMap::new(),
             deck: create_deck(),
             current_turn: 0,
             first_round: true,
             last_played: None,
+            roles: Vec::new(),
         }
     }
 
     pub fn add_player(&mut self, player: Player) {
-        self.players.push(player);
+        self.players.insert(player.role, player);
     }
 
-    pub fn deal(&mut self) {
+    fn deal(&mut self) {
         // Shuffle the deck
         self.deck.shuffle(&mut thread_rng());
 
         // Deal the cards
         let player_count = self.players.len();
         for i in 0..self.deck.len() {
+
+            // 3 of diamonds starts the game
+            let card = self.deck[i].clone();
+            if card == (Card::Suited { rank: 0, suit: Suit::Diamonds }) {
+                self.current_turn = i % player_count;
+            }
+
             self.players[i % player_count].add_card(self.deck[i].clone());
         }
+    }
+
+    pub 
+
+    pub fn start(&mut self) {
+
+        // Shuffle players
+        self.players.shuffle(&mut thread_rng());
+        
+        // Determine what roles are in play
+        match self.players.len() {
+            3 => {
+                self.roles = vec![Role::Millionaire, Role::MiddleClass, Role::Beggar];
+            },
+            4 => {
+                self.roles = vec![Role::Millionaire, Role::Rich, Role::Poor, Role::Beggar];
+            },
+            5 => {
+                self.roles = vec![Role::Millionaire, Role::Rich, Role::MiddleClass, Role::Poor, Role::Beggar];
+            },
+            _ => panic!("Only supports 3-5 players!"),
+        }
+
+        self.deal();
+
+
     }
 }
 

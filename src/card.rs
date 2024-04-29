@@ -2,7 +2,7 @@ use std::fmt;
 
 // Suit is a bitfield enum (repr(u8) tells the compiler to use a u8 to store the enum)
 #[repr(u8)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Suit {
     Spades = 0b0001,
     Hearts = 0b0010,
@@ -23,7 +23,7 @@ impl Suit {
 }
 
 // A card could be a suited card or a joker
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Card {
     Suited { rank: usize, suit: Suit },
     Joker,

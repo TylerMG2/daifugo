@@ -7,9 +7,11 @@ pub struct Player {
     pub role: Role,
 }
 
+#[derive(Debug, Hash, PartialEq, Eq)]
 pub enum Role {
     Millionaire,
     Rich,
+    MiddleClass,
     Poor,
     Beggar,
 }
@@ -17,10 +19,10 @@ pub enum Role {
 impl Player {
 
     // Create a new player with an empty hand
-    pub fn new(role: Role) -> Player {
+    pub fn new() -> Player {
         Player {
             hand: ([0; 13], 0),
-            role,
+            role: Role::MiddleClass,
         }
     }
 
