@@ -1,13 +1,11 @@
-use std::collections::HashMap;
-
-use crate::player::Player;
+use crate::player::Bot;
 use crate::card::Card;
 use crate::{Role, Suit};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 
 pub struct Game {
-    pub players: HashMap<Role, Player>,
+    pub players: Vec<Box<dyn Bot>>,
     pub deck: Vec<Card>,
     pub current_turn: usize,
     pub last_played: Option<Card>,
@@ -18,7 +16,7 @@ pub struct Game {
 impl Game {
     pub fn new() -> Game {
         Game {
-            players: HashMap::new(),
+            players: Vec::new(),
             deck: create_deck(),
             current_turn: 0,
             first_round: true,
@@ -27,11 +25,12 @@ impl Game {
         }
     }
 
-    pub fn add_player(&mut self, player: Player) {
-        self.players.insert(player.role, player);
+    pub fn add_bot(&mut self, bot: Box<dyn Bot>) {
+        self.players.push(bot);
     }
 
     fn deal(&mut self) {
+
         // Shuffle the deck
         self.deck.shuffle(&mut thread_rng());
 
@@ -45,11 +44,10 @@ impl Game {
                 self.current_turn = i % player_count;
             }
 
-            self.players[i % player_count].add_card(self.deck[i].clone());
+            let player = self.players[i % player_count].get_player();
+            player.add_card(card);
         }
     }
-
-    pub 
 
     pub fn start(&mut self) {
 
